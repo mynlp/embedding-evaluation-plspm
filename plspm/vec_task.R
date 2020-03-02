@@ -1,0 +1,46 @@
+
+install.packages("plspm")
+library(plspm)
+
+sat_data <- read.csv('../csv/all_normalized.csv')
+
+INF <- c(0,0,0,0,0,0)
+DER <- c(0,0,0,0,0,0)
+LEX <- c(0,0,0,0,0,0)
+ENC <- c(0,0,0,0,0,0)
+
+#veceval_task
+SYN <- c(1,1,1,1,0,0)
+SEM <- c(1,1,1,1,0,0)
+sat_path <- rbind(INF, DER, LEX, ENC, SYN, SEM)
+
+colnames(sat_path) <- rownames(sat_path)
+
+#INF_block <- c("I01", "I02", "I06", "I09")
+INF_block <- c("I01", "I02", "I03", "I04", "I05", "I06", "I07", "I08", "I09", "I10")
+DER_block <- c("D01", "D02", "D03", "D04", "D05", "D06", "D07", "D08", "D09", "D10")
+LEX_block <- c("L01", "L02", "L03", "L04", "L05", "L06", "L07", "L08", "L09", "L10")
+#LEX_block <- c("L01", "L02", "L03", "L04", "L05", "L07", "L08", "L09", "L10")
+#ENC_block <- c("E01", "E02", "E04", "E05", "E06", "E07", "E09", "E10")
+ENC_block <- c("E01", "E02", "E03", "E04", "E05", "E06", "E07", "E08", "E09", "E10")
+
+#veceval task block
+SYN_block <- c("V_pos", "V_chunk")
+SEM_block <- c("V_ner", "V_sentiment", "V_questions", "V_nli")
+sat_blocks <- list(INF_block, DER_block, LEX_block, ENC_block, SYN_block, SEM_block)
+
+sat_modes <- c("A", "A", "A", "A", "A", "A")
+
+satpls <- plspm(sat_data, sat_path, sat_blocks, modes=sat_modes, boot.val = TRUE, br = 600)
+
+# summary of results
+summary(satpls)
+
+# plot inner model results
+plot(satpls, what = "inner", curve=0.1, box.size=0.02, arr.pos=0.7, cex.txt=0.7)
+
+# plot outer model loadings
+plot(satpls, what = "loadings", box.size=0.02)
+
+# plot outer model weights
+plot(satpls, what = "weights", box.size=0.02)
